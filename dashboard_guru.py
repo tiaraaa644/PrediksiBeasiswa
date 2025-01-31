@@ -15,10 +15,10 @@ import logging
 def create_connection():
     try:
         connection = mysql.connector.connect(
-            host="localhost",        # Ganti dengan host database Anda
-            user="root",             # Ganti dengan username database Anda
-            password="",             # Ganti dengan password database Anda
-            database="db_prediksi_beasiswa"   # Ganti dengan nama database Anda
+            host=st.secrets["DB_HOST"],
+            database=st.secrets["DB_DATABASE"],
+            user=st.secrets["DB_USER"],
+            password=st.secrets["DB_PASSWORD"]
         )
         return connection
     except mysql.connector.Error as err:

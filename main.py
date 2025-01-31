@@ -13,10 +13,10 @@ import mysql.connector
 def get_data():
     # Koneksi ke database MySQL
     connection = mysql.connector.connect(
-           host=st.secrets["DB_HOST"],
-            database=st.secrets["DB_DATABASE"],
-            user=st.secrets["DB_USER"],
-            password=st.secrets["DB_PASSWORD"]
+            host="localhost",        
+            user="root",              
+            password="",             
+            database="db_prediksi_beasiswa" 
     )
 
     # Mengambil data siswa, akademik, dan non-akademik

@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import pymysql
+import mysql.connector
 import streamlit as st
 from sklearn import svm
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -19,11 +19,11 @@ import random
 def get_data():
     try:
         # Membuka koneksi ke database
-        connection = pymysql.connect(
-           host=st.secrets["DB_HOST"],
-            database=st.secrets["DB_DATABASE"],
-            user=st.secrets["DB_USER"],
-            password=st.secrets["DB_PASSWORD"]
+        connection = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",
+            database="db_prediksi_beasiswa"
         )
 
         # Menggunakan SQL JOIN untuk efisiensi
@@ -50,9 +50,9 @@ def get_data():
 
         return df
 
-    except pymysql.MySQLError as e:
+    except mysql.connector.Error as e:
         print(f"Error dalam koneksi database: {e}")
-        return None
+        conn = None
 
     finally:
         if 'connection' in locals():
@@ -63,7 +63,7 @@ def get_data():
 def update_student_data(nis, nama, kelas, total_nilai_uts, total_nilai_uas, total_score):
     try:
         # Membuka koneksi ke database
-        connection = pymysql.connect(
+        connection = mysql.connector.connect(
             host="localhost",
             user="root",
             password="",
@@ -96,11 +96,11 @@ def update_student_data(nis, nama, kelas, total_nilai_uts, total_nilai_uas, tota
 
         st.success("Data siswa berhasil diperbarui!")
         
-    except pymysql.MySQLError as e:
+    except mysql.connector.Error as e:
         st.error(f"Error dalam memperbarui data: {e}")
     finally:
-        if 'connection' in locals():
-            connection.close()
+     if 'connection' in locals() and connection.is_connected():
+        connection.close()
 
     # Clear cache dan refresh data
     st.cache_data.clear()  # Clear the cache
@@ -115,7 +115,7 @@ def update_student_form():
 
     if nis:  # Hanya menampilkan form setelah NIS dimasukkan
         # Mencari data siswa berdasarkan NIS
-        connection = pymysql.connect(
+        connection = mysql.connector.connect(
             host="localhost",
             user="root",
             password="",
@@ -154,10 +154,10 @@ def update_student_form():
             else:
                 st.error("Data siswa tidak ditemukan!")
 
-        except pymysql.MySQLError as e:
+        except mysql.connector.Error as e:
             st.error(f"Error dalam mengambil data: {e}")
         finally:
-            if 'connection' in locals():
+            if 'connection' in locals() and connection.is_connected():
                 connection.close()
 
 # 2. Menampilkan data dan hasil seleksi menggunakan SVM dan Naïve Bayes

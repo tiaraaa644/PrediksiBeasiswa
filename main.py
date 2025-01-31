@@ -6,13 +6,13 @@ from histori_data import app as histori_data_app
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import pymysql
+import mysql.connector
 
 
 # 1. Koneksi ke database dan ambil data
 def get_data():
     # Koneksi ke database MySQL
-    connection = pymysql.connect(
+    connection = mysql.connector.connect(
            host=st.secrets["DB_HOST"],
             database=st.secrets["DB_DATABASE"],
             user=st.secrets["DB_USER"],

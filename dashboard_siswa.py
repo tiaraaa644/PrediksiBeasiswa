@@ -1,5 +1,5 @@
 import pandas as pd
-import pymysql
+import mysql.connector
 import streamlit as st
 from sklearn import svm
 from sklearn.model_selection import train_test_split
@@ -10,11 +10,11 @@ import matplotlib.pyplot as plt
 # 1. Koneksi ke database dan ambil data
 def get_data():
     # Koneksi ke database MySQL
-    connection = pymysql.connect(
-           host=st.secrets["DB_HOST"],
-            database=st.secrets["DB_DATABASE"],
-            user=st.secrets["DB_USER"],
-            password=st.secrets["DB_PASSWORD"]
+    connection = mysql.connector.connect(
+            host="localhost",        
+            user="root",              
+            password="",             
+            database="db_prediksi_beasiswa" 
     )
 
     # Mengambil data siswa, akademik, dan non-akademik

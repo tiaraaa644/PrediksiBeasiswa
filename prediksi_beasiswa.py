@@ -20,10 +20,10 @@ def get_data():
     try:
         # Membuka koneksi ke database
         connection = mysql.connector.connect(
-            host=st.secrets["DB_HOST"],
-            database=st.secrets["DB_DATABASE"],
-            user=st.secrets["DB_USER"],
-            password=st.secrets["DB_PASSWORD"]
+            host="localhost",
+            user="root",
+            password="",
+            database="db_prediksi_beasiswa"
         )
 
         # Menggunakan SQL JOIN untuk efisiensi
@@ -64,10 +64,10 @@ def update_student_data(nis, nama, kelas, total_nilai_uts, total_nilai_uas, tota
     try:
         # Membuka koneksi ke database
         connection = mysql.connector.connect(
-            host=st.secrets["DB_HOST"],
-            database=st.secrets["DB_DATABASE"],
-            user=st.secrets["DB_USER"],
-            password=st.secrets["DB_PASSWORD"]
+            host="localhost",
+            user="root",
+            password="",
+            database="db_prediksi_beasiswa"
         )
 
         # SQL untuk memperbarui data siswa
@@ -116,10 +116,10 @@ def update_student_form():
     if nis:  # Hanya menampilkan form setelah NIS dimasukkan
         # Mencari data siswa berdasarkan NIS
         connection = mysql.connector.connect(
-           host=st.secrets["DB_HOST"],
-            database=st.secrets["DB_DATABASE"],
-            user=st.secrets["DB_USER"],
-            password=st.secrets["DB_PASSWORD"]
+            host="localhost",
+            user="root",
+            password="",
+            database="db_prediksi_beasiswa"
         )
 
         query = """
@@ -177,10 +177,12 @@ def display_results(df):
         </style>
     """, unsafe_allow_html=True)
 
+    # Menampilkan data yang sudah diolah
+    df['total_uts_uas'] = df['total_nilai_uts'] + df['total_nilai_uas']
     st.write(df[['nis', 'nama', 'kelas', 'total_nilai_uts', 'total_nilai_uas', 'total_score', 'total_uts_uas', 'total_skor_akhir', 'layak_beasiswa']])
 
     # Menentukan fitur dan target
-    X = df[['total_nilai_uts', 'total_nilai_uas', 'total_score']]
+    X = df[['total_nilai_uts', 'total_nilai_uas', 'total_score']]  # Sesuaikan fitur yang digunakan
     y = df['layak_beasiswa'].map({'layak': 1, 'tidak layak': 0})
 
     # Jika data hanya ada satu kelas, tampilkan error
@@ -225,6 +227,22 @@ def display_results(df):
         st.markdown('<div class="custom-title">🎓 Siswa Layak Berdasarkan Prediksi Naïve Bayes</div>', unsafe_allow_html=True)
         students_nb = df[df['layak_beasiswa_nb'] == 'layak']
         st.write(students_nb[['nis', 'nama', 'kelas', 'total_skor_akhir', 'layak_beasiswa_nb']])
+
+
+                # Perbandingan hasil prediksi Naïve Bayes dan SVM
+        st.markdown('<div class="custom-title">📊 Perbandingan Hasil Prediksi Naïve Bayes dan SVM</div>', unsafe_allow_html=True)
+
+        # Menghitung jumlah siswa yang layak menurut masing-masing metode
+        count_svm = students_svm.shape[0]
+        count_nb = students_nb.shape[0]
+
+        st.write(f"Jumlah siswa yang dinyatakan layak oleh **SVM**: {count_svm}")
+        st.write(f"Jumlah siswa yang dinyatakan layak oleh **Naïve Bayes**: {count_nb}")
+
+        # Menampilkan siswa yang diprediksi layak oleh kedua metode
+        st.markdown('<div class="custom-subtitle">🔍 Siswa yang Layak Berdasarkan Kedua Metode</div>', unsafe_allow_html=True)
+        students_both = df[(df['layak_beasiswa_prediksi'] == 'layak') & (df['layak_beasiswa_nb'] == 'layak')]
+        st.write(students_both[['nis', 'nama', 'kelas', 'total_skor_akhir']])
 
         # Menampilkan 10 siswa terpilih berdasarkan gabungan SVM dan Naïve Bayes per kelas
         st.markdown('<div class="custom-title">🎓 10 Siswa Terpilih Berdasarkan Gabungan SVM dan Naïve Bayes Per Kelas</div>', unsafe_allow_html=True)
@@ -305,6 +323,7 @@ def display_evaluation(df, X_test, y_test, svm_model, nb_model):
     ax_nb.set_xlabel('Prediksi')
     ax_nb.set_ylabel('Aktual')
     st.pyplot(fig_nb)
+
 
 # Gabungkan total nilai UTS dan UAS menjadi satu fitur
     df['total_uts_uas'] = df['total_nilai_uts'] + df['total_nilai_uas']

@@ -18,12 +18,11 @@ import random
 @st.cache_data
 def get_data():
     try:
-        # Membuka koneksi ke database
         connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="db_prediksi_beasiswa"
+            host=st.secrets["DB_HOST"],
+            database=st.secrets["DB_DATABASE"],
+            user=st.secrets["DB_USER"],
+            password=st.secrets["DB_PASSWORD"]
         )
 
         # Menggunakan SQL JOIN untuk efisiensi
@@ -62,12 +61,11 @@ def get_data():
 
 def update_student_data(nis, nama, kelas, total_nilai_uts, total_nilai_uas, total_score):
     try:
-        # Membuka koneksi ke database
         connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="db_prediksi_beasiswa"
+            host=st.secrets["DB_HOST"],
+            database=st.secrets["DB_DATABASE"],
+            user=st.secrets["DB_USER"],
+            password=st.secrets["DB_PASSWORD"]
         )
 
         # SQL untuk memperbarui data siswa
@@ -116,10 +114,10 @@ def update_student_form():
     if nis:  # Hanya menampilkan form setelah NIS dimasukkan
         # Mencari data siswa berdasarkan NIS
         connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="db_prediksi_beasiswa"
+            host=st.secrets["DB_HOST"],
+            database=st.secrets["DB_DATABASE"],
+            user=st.secrets["DB_USER"],
+            password=st.secrets["DB_PASSWORD"]
         )
 
         query = """
